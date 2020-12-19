@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "../build",
+    "module": "esnext",
+    "target": "esnext",
+    "incremental": true
+  }
+}

@@ -1,0 +1,13 @@
+export const enum BoardConstant {
+  WIDTH = 10,
+  HEIGHT = 20,
+
+  HEIGHT_RATIO = HEIGHT / WIDTH,
+  WIDTH_RATIO = WIDTH / HEIGHT,
+
+  BOARD_ARRAY_LENGTH = WIDTH * HEIGHT,
+  BOARD_ARRAY_STRIDE = WIDTH,
+
+  CENTER_X = WIDTH / 2,
+  CENTER_Y = HEIGHT / 2,
+}
