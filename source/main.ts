@@ -22,6 +22,10 @@ const [
 beat.volume = beat_fast.volume = 0.1;
 tetris.volume = tetris_slow.volume = 0.2;
 
+const mobile = window.ontouchstart === null;
+
+let touch_paused = 0;
+
 class Tetris {
   private readonly board = new Board();
   private piece = this.board.choose();
@@ -45,12 +49,14 @@ class Tetris {
       body.addEventListener("touchend", up);
 
       function down(e: TouchEvent) {
+        if (touch_paused > 0) return;
         const touch = e.changedTouches[0];
         touchstartX = touch.screenX;
         touchstartY = touch.screenY;
       }
 
       function up(e: TouchEvent) {
+        if (touch_paused > 0) return;
         const touch = e.changedTouches[0];
         touchendX = touch.screenX;
         touchendY = touch.screenY;
@@ -58,26 +64,30 @@ class Tetris {
       }
 
       const gesture = () => {
+        if (this.ended) return this.continue();
+
         const tx = 50;
-        const ty = 10;
+        const ty = 50;
 
         const dx = touchendX - touchstartX;
         const dy = touchendY - touchstartY;
-
-        console.log(dx, dy);
 
         if (dx >= tx) {
           this.right();
         } else if (dx <= -tx) {
           this.left();
-        } else {
-          if (dy >= ty) {
-            this.down();
-          } else if (dy <= -ty) {
-            this.up();
-          } else {
-            this.continue();
-          }
+        }
+
+        const send = 2.5 * ty;
+
+        if (dy >= send) {
+          this.send();
+        } else if (dy >= ty) {
+          this.down();
+        }
+
+        if (dy <= -ty) {
+          this.up();
         }
       };
     }
@@ -86,6 +96,7 @@ class Tetris {
   private control(e: KeyboardEvent) {
     switch (e.key) {
       case " ":
+        this.send();
         this.continue();
         break;
       case "ArrowUp":
@@ -122,7 +133,13 @@ class Tetris {
   }
 
   private down() {
-    this.piece.move(DOWN);
+    return this.piece.move(DOWN);
+  }
+
+  private send() {
+    if (this.ended) return;
+    while (this.down());
+    this.lock(true);
   }
 
   private continue() {
@@ -144,6 +161,7 @@ class Tetris {
   }
 
   private end() {
+    touch_paused = 4;
     const score = this.score;
     if (score > this.highscore) {
       this.highscore = score;
@@ -190,6 +208,7 @@ class Tetris {
   }
 
   update() {
+    if (touch_paused > 0) touch_paused--;
     if (this.ended) return;
     this.lock(this.piece.move(DOWN));
   }
@@ -272,7 +291,7 @@ class Tetris {
     );
     context.font = `${px / 2}px ${font}`;
     context.fillText(
-      "Press SPACE to RETRY",
+      `${mobile ? "Touch" : "Press SPACE"} to RESTART`,
       BoardConstant.CENTER_X * px,
       (BoardConstant.HEIGHT - 3) * px
     );

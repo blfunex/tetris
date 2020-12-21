@@ -8,6 +8,8 @@ const font = "'Major Mono Display', 'Courier New', Courier, monospace";
 const [beat, beat_fast, tetris_slow, tetris, line, no_line,] = document.querySelectorAll("audio");
 beat.volume = beat_fast.volume = 0.1;
 tetris.volume = tetris_slow.volume = 0.2;
+const mobile = window.ontouchstart === null;
+let touch_paused = 0;
 class Tetris {
     constructor() {
         this.board = new Board();
@@ -27,38 +29,42 @@ class Tetris {
             body.addEventListener("touchstart", down);
             body.addEventListener("touchend", up);
             function down(e) {
+                if (touch_paused > 0)
+                    return;
                 const touch = e.changedTouches[0];
                 touchstartX = touch.screenX;
                 touchstartY = touch.screenY;
             }
             function up(e) {
+                if (touch_paused > 0)
+                    return;
                 const touch = e.changedTouches[0];
                 touchendX = touch.screenX;
                 touchendY = touch.screenY;
                 gesture();
             }
             const gesture = () => {
+                if (this.ended)
+                    return this.continue();
                 const tx = 50;
-                const ty = 10;
+                const ty = 50;
                 const dx = touchendX - touchstartX;
                 const dy = touchendY - touchstartY;
-                console.log(dx, dy);
                 if (dx >= tx) {
                     this.right();
                 }
                 else if (dx <= -tx) {
                     this.left();
                 }
-                else {
-                    if (dy >= ty) {
-                        this.down();
-                    }
-                    else if (dy <= -ty) {
-                        this.up();
-                    }
-                    else {
-                        this.continue();
-                    }
+                const send = 2.5 * ty;
+                if (dy >= send) {
+                    this.send();
+                }
+                else if (dy >= ty) {
+                    this.down();
+                }
+                if (dy <= -ty) {
+                    this.up();
                 }
             };
         }
@@ -66,6 +72,7 @@ class Tetris {
     control(e) {
         switch (e.key) {
             case " ":
+                this.send();
                 this.continue();
                 break;
             case "ArrowUp":
@@ -96,7 +103,14 @@ class Tetris {
         this.piece.move(RIGHT);
     }
     down() {
-        this.piece.move(DOWN);
+        return this.piece.move(DOWN);
+    }
+    send() {
+        if (this.ended)
+            return;
+        while (this.down())
+            ;
+        this.lock(true);
     }
     continue() {
         if (canvas.onclick)
@@ -115,6 +129,7 @@ class Tetris {
         this.continueProgression(tetris, tetris_slow);
     }
     end() {
+        touch_paused = 4;
         const score = this.score;
         if (score > this.highscore) {
             this.highscore = score;
@@ -159,6 +174,8 @@ class Tetris {
         a.muted = true;
     }
     update() {
+        if (touch_paused > 0)
+            touch_paused--;
         if (this.ended)
             return;
         this.lock(this.piece.move(DOWN));
@@ -220,7 +237,7 @@ class Tetris {
         context.font = `${px / 2}px ${font}`;
         context.fillText(`HIGHSCORE: ${highscore}`, 5 /* CENTER_X */ * px, (10 /* CENTER_Y */ + 1) * px);
         context.font = `${px / 2}px ${font}`;
-        context.fillText("Press SPACE to RETRY", 5 /* CENTER_X */ * px, (20 /* HEIGHT */ - 3) * px);
+        context.fillText(`${mobile ? "Touch" : "Press SPACE"} to RESTART`, 5 /* CENTER_X */ * px, (20 /* HEIGHT */ - 3) * px);
     }
 }
 const game = new Tetris();

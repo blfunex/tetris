@@ -4,9 +4,13 @@ export function lerp(a: number, b: number, t: number) {
 
 // prettier-ignore
 export function lerp_angle(a: number, b: number, t: number) {
-  let delta = repeat(b - a, TAU);
-  if (delta > PI) delta -= TAU;
-  return a + delta * t;
+  return a + normalize_angle(b - a) * t;
+}
+
+export function normalize_angle(angle: number) {
+  angle = repeat(angle, TAU);
+  if (angle > PI) angle -= TAU;
+  return angle;
 }
 
 const PI = Math.PI;
