@@ -115,10 +115,8 @@ export default class Piece {
 
     context.save();
 
-    if (this.board.pixel) {
-      context.fillStyle = "#03EA09";
-      this.tetromino.render(x, y, index);
-    }
+    context.fillStyle = "#03EA09";
+    this.tetromino.render(x, y, index);
 
     context.fillStyle = "#038607";
     this.tetromino.renderRotated(rx, ry, angle);

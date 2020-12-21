@@ -8,7 +8,7 @@ const DOWN = Point(0, 1);
 const LEFT = Point(-1, 0);
 const RIGHT = Point(+1, 0);
 
-const font = "'Courier New', Courier, monospace";
+const font = "'Major Mono Display', 'Courier New', Courier, monospace";
 
 const [beat, beat_fast, tetris_slow, tetris] = document.querySelectorAll(
   "audio"
@@ -17,6 +17,7 @@ const [beat, beat_fast, tetris_slow, tetris] = document.querySelectorAll(
 class Tetris {
   private readonly board = new Board();
   private piece = this.board.choose();
+  private next = this.board.choose();
 
   score = 0;
   highscore = parseInt(localStorage.getItem("highscore") ?? "0", 10);
@@ -28,9 +29,6 @@ class Tetris {
   private control(e: KeyboardEvent) {
     e.preventDefault();
     switch (e.key) {
-      case "F1":
-        this.board.pixel = !this.board.pixel;
-        break;
       case " ":
         if (this.ended) {
           this.startSound();
@@ -62,11 +60,8 @@ class Tetris {
   private ended = false;
 
   private startSound() {
-    beat.currentTime = 0;
-    beat_fast.currentTime = 0;
-    tetris_slow.currentTime = 0;
-    tetris.muted = beat_fast.muted = true;
-    beat.muted = tetris_slow.muted = false;
+    this.continueProgression(beat_fast, beat);
+    this.continueProgression(tetris, tetris_slow);
   }
 
   private end() {
@@ -90,17 +85,21 @@ class Tetris {
         this.transitionToFasterSound();
       }
       this.score += result === LockResult.NOTHING ? 5 : result * 20;
-      this.piece = board.choose();
+      this.piece = this.next;
+      this.next = board.choose();
     }
   }
 
   private transitionToFasterSound() {
     if (!tetris.muted) return;
-    tetris.currentTime =
-      tetris.duration *
-      (tetris_slow.currentTime / tetris_slow.currentTime);
-    tetris.muted = beat_fast.muted = false;
-    tetris_slow.muted = beat.muted = true;
+    this.continueProgression(tetris_slow, tetris);
+    this.continueProgression(beat, beat_fast);
+  }
+
+  private continueProgression(a: HTMLAudioElement, b: HTMLAudioElement) {
+    b.currentTime = b.duration * (a.currentTime / a.currentTime);
+    b.muted = false;
+    a.muted = true;
   }
 
   update() {
@@ -123,16 +122,23 @@ class Tetris {
   renderScore() {
     context.save();
     context.font = `900 ${px}px ${font}`;
-    context.textBaseline = "top";
+    context.textBaseline = "middle";
     context.textAlign = "left";
     context.fillStyle = "#04D20A";
     this.rendered_score +=
       Math.sign(this.score - this.rendered_score) * 0.5;
     context.fillText(
-      `${Math.round(this.rendered_score)} ${this.board.height}`,
-      px * 0.5,
-      px * 0.5
+      `${Math.round(this.rendered_score)}`,
+      px * 1.5,
+      px * 0.7
     );
+    context.scale(0.25, 0.25);
+    const x = 1.25;
+    const y = 1.0;
+    context.lineWidth = px / 4;
+    context.strokeStyle = "#03EA09";
+    context.strokeRect(x * px, y * px, 4 * px, 4 * px);
+    this.next.tetromino.render(x, y, 0);
     context.restore();
   }
 
@@ -157,17 +163,11 @@ class Tetris {
       BoardConstant.CENTER_X * px,
       (BoardConstant.CENTER_Y + 1) * px
     );
-    context.font = `${px / 4}px ${font}`;
-    context.fillText(
-      "Use F1 to toggle non-animated Tetrominos.",
-      BoardConstant.CENTER_X * px,
-      (BoardConstant.HEIGHT - 1.4) * px
-    );
     context.font = `${px / 2}px ${font}`;
     context.fillText(
       "Press SPACE BAR to RETRY",
       BoardConstant.CENTER_X * px,
-      (BoardConstant.HEIGHT - 1) * px
+      (BoardConstant.HEIGHT - 3) * px
     );
   }
 }

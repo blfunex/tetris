@@ -3,7 +3,6 @@ import Piece from "./Piece.js";
 import Tetromino from "./Tetromino.js";
 export default class Board {
     constructor() {
-        this.pixel = false;
         this.height = 0;
         this.board = Array.from({
             length: 200 /* BOARD_ARRAY_LENGTH */,

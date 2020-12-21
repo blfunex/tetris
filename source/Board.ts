@@ -4,7 +4,6 @@ import Piece from "./Piece.js";
 import Tetromino from "./Tetromino.js";
 
 export default class Board {
-  public pixel = false;
   public height = 0;
 
   clear() {

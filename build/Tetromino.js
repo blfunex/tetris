@@ -13,6 +13,9 @@ export default class Tetromino {
     renderRotated(x, y, rotation) {
         drawTetromino(x, y, this.shapes[0], ...this.center, rotation);
     }
+    renderPreview(x, y) {
+        drawTetrominoShapeCentered(x, y, this.shapes[0]);
+    }
 }
 Tetromino.Z = new Tetromino(TetrominoShape.Z, [1.5, 1.5]);
 Tetromino.S = new Tetromino(TetrominoShape.S, [1.5, 1.5]);
@@ -28,6 +31,16 @@ function drawTetrominoShape(x, y, tetromino) {
             // prettier-ignore
             tetromino[row][col] &&
                 pixel(x + col, y + row);
+        }
+    }
+}
+function drawTetrominoShapeCentered(x, y, tetromino) {
+    const size = tetromino.length;
+    const center = size * 0.5;
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+            // prettier-ignore
+            tetromino[row][col] && pixel(x + col - center, y + row - center);
         }
     }
 }
