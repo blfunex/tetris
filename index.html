@@ -24,6 +24,7 @@
     canvas {
       display: block;
       font-family: 'Courier New', Courier, monospace;
+      touch-action: none;
     }
     :root {
       background-color: black;
@@ -31,10 +32,12 @@
   </style>
 </head>
 <body>
-  <audio src="beat.ogg" autoplay loop></audio>
+  <audio src="beat.ogg" autoplay loop muted></audio>
   <audio src="beat_fast.ogg" autoplay loop muted></audio>
-  <audio src="tetris_slow.ogg" autoplay loop></audio>
-  <audio src="tetris.ogg" autoplay loop muted></audio>
+  <audio src="tetris_slow.ogg" autoplay loop muted></audio>
+  <audio src="tetris.ogg" autoplay loop></audio>
+  <audio src="line.ogg"></audio>
+  <audio src="no_line.ogg"></audio>
   <script src="./build/main.js" type="module"></script>
 </body>
 </html>

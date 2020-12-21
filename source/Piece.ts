@@ -115,7 +115,7 @@ export default class Piece {
 
     context.save();
 
-    context.fillStyle = "#03EA09";
+    context.fillStyle = "#3BDF40";
     this.tetromino.render(x, y, index);
 
     context.fillStyle = "#038607";

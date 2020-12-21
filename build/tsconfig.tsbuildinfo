@@ -257,17 +257,17 @@
         "affectsGlobalScope": false
       },
       "../source/piece.ts": {
-        "version": "c2a78a7be3f9dcb4abf584612ed6f75875e98cff9dcaa1f3c23a68280151cab0",
+        "version": "c05f0e721b284e55bda8aefcf78c6b46d3b64df885cad0c7523d7b69a90004f2",
         "signature": "cf94e7a45b7ed7fd22f286992331368f695eb5d97a0eaec5ec893bbae46cd84d",
         "affectsGlobalScope": false
       },
       "../source/board.ts": {
-        "version": "5a753f2d65e0c3eaf0802df5035a8999409f2e944030d6203a667a9aefaf5550",
+        "version": "fbf0e926b7c511b3e73528a09d1e06e6d3932bc4be56fbd04be1d4ef5348f125",
         "signature": "0fd1115cbb7ac774ff329523d851d85b7b58024030c8c58469338fe53a57c88c",
         "affectsGlobalScope": false
       },
       "../source/main.ts": {
-        "version": "e2541835f585b53131dbf53bd0fd18aff6d0f967da0780a6cc2aed9d1de2e293",
+        "version": "9cbe741694cb39de7f7b8cf6dfd58fe068285bbc7086f7c065794907569a6d57",
         "signature": "f761c91419d0a89422a0004ef1a92929dd4d2d5e5c16758654d8b0467d1998c6",
         "affectsGlobalScope": false
       }

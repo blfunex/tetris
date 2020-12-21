@@ -46,9 +46,11 @@ export default class Board {
   render() {
     clear();
     context.fillStyle = "#038607";
+    this.height = 0;
     for (let r = 0; r < BoardConstant.HEIGHT; r++) {
       for (let c = 0; c < BoardConstant.WIDTH; c++) {
         if (this.get(c, r)) {
+          this.height = Math.max(20 - r, this.height);
           pixel(c, r);
         }
       }
@@ -80,8 +82,6 @@ export default class Board {
 
         // we lock the piece
         this.set(x + c, y + r, true);
-
-        this.height = Math.max(20 - (y + r), this.height);
       }
     }
 

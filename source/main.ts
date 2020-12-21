@@ -10,9 +10,17 @@ const RIGHT = Point(+1, 0);
 
 const font = "'Major Mono Display', 'Courier New', Courier, monospace";
 
-const [beat, beat_fast, tetris_slow, tetris] = document.querySelectorAll(
-  "audio"
-);
+const [
+  beat,
+  beat_fast,
+  tetris_slow,
+  tetris,
+  line,
+  no_line,
+] = document.querySelectorAll("audio");
+
+beat.volume = beat_fast.volume = 0.1;
+tetris.volume = tetris_slow.volume = 0.2;
 
 class Tetris {
   private readonly board = new Board();
@@ -24,40 +32,111 @@ class Tetris {
 
   constructor() {
     document.onkeydown = this.control.bind(this);
+
+    {
+      let touchstartX = 0;
+      let touchstartY = 0;
+      let touchendX = 0;
+      let touchendY = 0;
+
+      const body = canvas;
+
+      body.addEventListener("touchstart", down);
+      body.addEventListener("touchend", up);
+
+      function down(e: TouchEvent) {
+        const touch = e.changedTouches[0];
+        touchstartX = touch.screenX;
+        touchstartY = touch.screenY;
+      }
+
+      function up(e: TouchEvent) {
+        const touch = e.changedTouches[0];
+        touchendX = touch.screenX;
+        touchendY = touch.screenY;
+        gesture();
+      }
+
+      const gesture = () => {
+        const tx = 50;
+        const ty = 10;
+
+        const dx = touchendX - touchstartX;
+        const dy = touchendY - touchstartY;
+
+        console.log(dx, dy);
+
+        if (dx >= tx) {
+          this.right();
+        } else if (dx <= -tx) {
+          this.left();
+        } else {
+          if (dy >= ty) {
+            this.down();
+          } else if (dy <= -ty) {
+            this.up();
+          } else {
+            this.continue();
+          }
+        }
+      };
+    }
   }
 
   private control(e: KeyboardEvent) {
-    e.preventDefault();
     switch (e.key) {
       case " ":
-        if (this.ended) {
-          this.startSound();
-          this.board.clear();
-          this.piece = this.board.choose();
-          this.score = 0;
-          this.ended = false;
-        }
+        this.continue();
         break;
       case "ArrowUp":
       case "w":
-        this.piece.rotate();
+        this.up();
         return;
       case "ArrowLeft":
       case "a":
-        this.piece.move(LEFT);
+        this.left();
         return;
       case "ArrowRight":
       case "d":
-        this.piece.move(RIGHT);
+        this.right();
         return;
       case "ArrowDown":
       case "s":
-        this.piece.move(DOWN);
+        this.down();
         return;
     }
   }
 
   private ended = false;
+
+  private up() {
+    this.piece.rotate();
+  }
+
+  private left() {
+    this.piece.move(LEFT);
+  }
+
+  private right() {
+    this.piece.move(RIGHT);
+  }
+
+  private down() {
+    this.piece.move(DOWN);
+  }
+
+  private continue() {
+    if (canvas.onclick)
+      // @ts-ignore
+      canvas.onclick();
+    if (this.ended) {
+      this.startSound();
+      this.board.clear();
+      this.piece = this.board.choose();
+      this.score = 0;
+      this.ended = false;
+    }
+  }
 
   private startSound() {
     this.continueProgression(beat_fast, beat);
@@ -81,13 +160,15 @@ class Tetris {
       beat.muted = beat_fast.muted = true;
       return this.end();
     } else {
-      if (this.board.height >= 10) {
-        this.transitionToFasterSound();
-      }
       this.score += result === LockResult.NOTHING ? 5 : result * 20;
       this.piece = this.next;
       this.next = board.choose();
     }
+  }
+
+  private playOneTime(sound: HTMLAudioElement) {
+    sound.currentTime = 0;
+    sound.play();
   }
 
   private transitionToFasterSound() {
@@ -96,8 +177,14 @@ class Tetris {
     this.continueProgression(beat, beat_fast);
   }
 
+  transitionToSlowerSound() {
+    if (!tetris_slow.muted) return;
+    this.continueProgression(tetris, tetris_slow);
+    this.continueProgression(beat_fast, beat);
+  }
+
   private continueProgression(a: HTMLAudioElement, b: HTMLAudioElement) {
-    b.currentTime = b.duration * (a.currentTime / a.currentTime);
+    b.currentTime = b.duration * (a.currentTime / a.duration);
     b.muted = false;
     a.muted = true;
   }
@@ -111,9 +198,23 @@ class Tetris {
     if (this.ended) {
       this.renderGameOver(this.score, this.highscore);
     } else {
-      this.board.render();
+      const board = this.board;
+      const previous = board.height;
+      board.render();
       this.piece.render();
       this.renderScore();
+      const current = board.height;
+      if (previous < current) {
+        if (current >= 10) {
+          this.transitionToFasterSound();
+        }
+        this.playOneTime(no_line);
+      } else if (previous > current) {
+        if (current < 10) {
+          this.transitionToSlowerSound();
+        }
+        this.playOneTime(line);
+      }
     }
   }
 
@@ -124,7 +225,7 @@ class Tetris {
     context.font = `900 ${px}px ${font}`;
     context.textBaseline = "middle";
     context.textAlign = "left";
-    context.fillStyle = "#04D20A";
+    context.fillStyle = "#03AC08";
     this.rendered_score +=
       Math.sign(this.score - this.rendered_score) * 0.5;
     context.fillText(
@@ -136,8 +237,14 @@ class Tetris {
     const x = 1.25;
     const y = 1.0;
     context.lineWidth = px / 4;
-    context.strokeStyle = "#03EA09";
-    context.strokeRect(x * px, y * px, 4 * px, 4 * px);
+    const o = px / 8;
+    context.strokeStyle = "#3BDF40";
+    context.strokeRect(
+      x * px - o,
+      y * px - o,
+      4 * px + 2 * o,
+      4 * px + 2 * o
+    );
     this.next.tetromino.render(x, y, 0);
     context.restore();
   }
@@ -165,7 +272,7 @@ class Tetris {
     );
     context.font = `${px / 2}px ${font}`;
     context.fillText(
-      "Press SPACE BAR to RETRY",
+      "Press SPACE to RETRY",
       BoardConstant.CENTER_X * px,
       (BoardConstant.HEIGHT - 3) * px
     );
@@ -174,33 +281,57 @@ class Tetris {
 
 const game = new Tetris();
 
-{
-  let then = performance.now();
+context.fillStyle = "#038607";
+context.fillRect(0, 0, canvas.width, canvas.height);
+context.fillStyle = "#55FE55";
+context.font = `bolder ${2.25 * px}px ${font}`;
+context.textBaseline = "middle";
+context.textAlign = "center";
+context.fillText(
+  `TETRIS`,
+  BoardConstant.CENTER_X * px,
+  BoardConstant.CENTER_Y * px
+);
+context.font = `${px / 2}px ${font}`;
+context.fillText(
+  "CLICK TO START",
+  BoardConstant.CENTER_X * px,
+  (BoardConstant.HEIGHT - 3) * px
+);
 
-  const UPS = 3 / 2;
+canvas.onclick = () => {
+  canvas.requestFullscreen();
+  canvas.onclick = null;
+  {
+    let then = performance.now();
 
-  const step = 1000 / UPS;
+    const UPS = 3 / 2;
 
-  let accumulator = 0;
+    const step = 1000 / UPS;
 
-  (function frame(now) {
-    const dt = now - then;
+    let accumulator = 0;
 
-    accumulator += dt;
+    (function frame(now) {
+      const dt = now - then;
 
-    while (accumulator >= step) {
-      accumulator -= step;
-      game.update();
-    }
+      accumulator += dt;
 
-    game.render();
+      while (accumulator >= step) {
+        accumulator -= step;
+        game.update();
+      }
 
-    then = now;
+      game.render();
 
-    requestAnimationFrame(frame);
-  })(then);
+      then = now;
 
-  beat.currentTime = 0;
-  beat_fast.currentTime = 0;
-  tetris_slow.currentTime = 0;
-}
+      requestAnimationFrame(frame);
+    })(then);
+
+    beat.currentTime = 0;
+    beat_fast.currentTime = 0;
+    tetris_slow.currentTime = 0;
+
+    game.transitionToSlowerSound();
+  }
+};

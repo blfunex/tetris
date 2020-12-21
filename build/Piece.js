@@ -76,7 +76,7 @@ export default class Piece {
         const angle = (this.render_angle = lerp_angle(this.render_angle, (index * Math.PI) / 2, 0.1));
         const [rx, ry] = Point.lerp(this.render_position, this.render_position, this.position, 0.1);
         context.save();
-        context.fillStyle = "#03EA09";
+        context.fillStyle = "#3BDF40";
         this.tetromino.render(x, y, index);
         context.fillStyle = "#038607";
         this.tetromino.renderRotated(rx, ry, angle);
