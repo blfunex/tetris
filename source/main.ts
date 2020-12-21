@@ -369,19 +369,20 @@ button.onclick = e => {
 };
 
 if (!mobile) {
-  mute();
+  tetris_lofi.play();
+  tetris_lofi.muted = false;
   game.unmuteIfEnabled();
 }
 
 target.onclick = () => {
   if (mobile && !(target === document.fullscreenElement)) {
-    game.unmuteIfEnabled();
-    tetris_lofi.play();
-    tetris_lofi.currentTime = 0;
     target.requestFullscreen();
+
+    tetris_lofi.currentTime = 0;
+    tetris_lofi.play();
+    game.unmuteIfEnabled();
   } else {
     target.onclick = null;
-    then = performance.now();
   }
 };
 
@@ -429,6 +430,8 @@ document.onvisibilitychange = () => {
 };
 
 function run() {
+  then = performance.now();
+
   game.transitionToGameSound();
 
   const UPS = 3 / 2;
