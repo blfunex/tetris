@@ -10,17 +10,19 @@ const RIGHT = Point(+1, 0);
 
 const font = "'Major Mono Display', 'Courier New', Courier, monospace";
 
+const audios = document.querySelectorAll("audio");
+
 const [
   beat,
   beat_fast,
+  tetris_lofi,
   tetris_slow,
   tetris,
   line,
   no_line,
-] = document.querySelectorAll("audio");
+] = audios;
 
-beat.volume = beat_fast.volume = 0.5;
-tetris.volume = tetris_slow.volume = 0.4;
+unmute();
 
 const mobile = window.ontouchstart === null;
 
@@ -31,11 +33,29 @@ class Tetris {
   private piece = this.board.choose();
   private next = this.board.choose();
 
+  muted = JSON.parse(localStorage.getItem("tetris.muted") ?? "false");
+
+  unmuteIfEnabled() {
+    this.setSoundState(this.muted);
+  }
+
+  toggleSound() {
+    const muted = (this.muted = !this.muted);
+    localStorage.setItem("tetris.muted", JSON.stringify(muted));
+    this.setSoundState(muted);
+    return muted;
+  }
+
   score = 0;
-  highscore = parseInt(localStorage.getItem("highscore") ?? "0", 10);
+  highscore = parseInt(
+    localStorage.getItem("tetris.highscore") ?? "0",
+    10
+  );
 
   constructor() {
     document.onkeydown = this.control.bind(this);
+
+    this.unmuteIfEnabled();
 
     {
       let touchstartX = 0;
@@ -43,10 +63,8 @@ class Tetris {
       let touchendX = 0;
       let touchendY = 0;
 
-      const body = canvas;
-
-      body.addEventListener("touchstart", down);
-      body.addEventListener("touchend", up);
+      target.addEventListener("touchstart", down);
+      target.addEventListener("touchend", up);
 
       function down(e: TouchEvent) {
         if (touch_paused > 0) return;
@@ -64,7 +82,7 @@ class Tetris {
       }
 
       const gesture = () => {
-        if (this.ended) return this.continue();
+        if (this.ended) return this.restart();
 
         const tx = 50;
         const ty = 50;
@@ -93,29 +111,40 @@ class Tetris {
     }
   }
 
+  private setSoundState(muted: boolean) {
+    if (muted) mute();
+    else unmute();
+  }
+
   private control(e: KeyboardEvent) {
     switch (e.key) {
+      default:
+        return;
+      case "F1":
+        this.toggleSound();
+        break;
       case " ":
         this.send();
-        this.continue();
+        this.restart();
         break;
       case "ArrowUp":
       case "w":
         this.up();
-        return;
+        break;
       case "ArrowLeft":
       case "a":
         this.left();
-        return;
+        break;
       case "ArrowRight":
       case "d":
         this.right();
-        return;
+        break;
       case "ArrowDown":
       case "s":
         this.down();
-        return;
+        break;
     }
+    e.preventDefault();
   }
 
   private ended = false;
@@ -142,12 +171,9 @@ class Tetris {
     this.lock(true);
   }
 
-  private continue() {
-    if (canvas.onclick)
-      // @ts-ignore
-      canvas.onclick();
+  private restart() {
     if (this.ended) {
-      this.startSound();
+      this.transitionToGameSound();
       this.board.clear();
       this.piece = this.board.choose();
       this.score = 0;
@@ -155,9 +181,44 @@ class Tetris {
     }
   }
 
-  private startSound() {
-    this.continueProgression(beat_fast, beat);
+  private sfx(sound: HTMLAudioElement) {
+    sound.currentTime = 0;
+    sound.play();
+  }
+
+  transitionToGameSound() {
+    if (tetris_lofi.muted) return;
+    this.continueProgression(tetris_lofi, tetris_slow);
+    beat.muted = beat_fast.muted = true;
+  }
+
+  private transitionToMenuSound() {
+    if (!tetris_lofi.muted) return;
+    this.continueProgression(
+      tetris.muted ? tetris_slow : tetris,
+      tetris_lofi
+    );
+    beat.muted = beat_fast.muted = true;
+  }
+
+  private transitionToFastTetris() {
+    if (tetris_slow.muted) return;
+    this.continueProgression(tetris_slow, tetris);
+  }
+
+  private transitionToSlowTetris() {
+    if (tetris.muted) return;
     this.continueProgression(tetris, tetris_slow);
+  }
+
+  private transitionToFastBeat() {
+    if (beat.muted) return;
+    this.continueProgression(beat, beat_fast);
+  }
+
+  private transitionToSlowBeat() {
+    if (beat_fast.muted) return;
+    this.continueProgression(beat_fast, beat);
   }
 
   private end() {
@@ -165,7 +226,7 @@ class Tetris {
     const score = this.score;
     if (score > this.highscore) {
       this.highscore = score;
-      localStorage.setItem("highscore", score.toString());
+      localStorage.setItem("tetris.highscore", score.toString());
     }
     this.ended = true;
   }
@@ -175,30 +236,13 @@ class Tetris {
     const board = this.board;
     const result = board.lock(this.piece);
     if (result === LockResult.GAME_OVER) {
-      beat.muted = beat_fast.muted = true;
+      this.transitionToMenuSound();
       return this.end();
     } else {
       this.score += result === LockResult.NOTHING ? 5 : result * 20;
       this.piece = this.next;
       this.next = board.choose();
     }
-  }
-
-  private playOneTime(sound: HTMLAudioElement) {
-    sound.currentTime = 0;
-    sound.play();
-  }
-
-  private transitionToFasterSound() {
-    if (!tetris.muted) return;
-    this.continueProgression(tetris_slow, tetris);
-    this.continueProgression(beat, beat_fast);
-  }
-
-  transitionToSlowerSound() {
-    if (!tetris_slow.muted) return;
-    this.continueProgression(tetris, tetris_slow);
-    this.continueProgression(beat_fast, beat);
   }
 
   private continueProgression(a: HTMLAudioElement, b: HTMLAudioElement) {
@@ -217,27 +261,39 @@ class Tetris {
     if (this.ended) {
       this.renderGameOver(this.score, this.highscore);
     } else {
-      const board = this.board;
-      const previous = board.height;
-      board.render();
+      this.board.render();
       this.piece.render();
       this.renderScore();
-      const current = board.height;
-      if (previous < current) {
-        if (current >= 10) {
-          this.transitionToFasterSound();
-        }
-        this.playOneTime(no_line);
-      } else if (previous > current) {
-        if (current < 10) {
-          this.transitionToSlowerSound();
-        }
-        this.playOneTime(line);
-      }
     }
   }
 
   private rendered_score = 0;
+
+  private changeSounds(previous: number, current: number) {
+    if (previous < current) {
+      if (current >= 5) {
+        this.transitionToSlowBeat();
+      }
+      if (current >= 10) {
+        this.transitionToFastBeat();
+      }
+      if (current >= 15) {
+        this.transitionToFastTetris();
+      }
+      this.sfx(no_line);
+    } else if (previous > current) {
+      if (current < 15) {
+        this.transitionToSlowTetris();
+      }
+      if (current < 10) {
+        this.transitionToSlowBeat();
+      }
+      if (current < 5) {
+        beat.muted = beat_fast.muted = true;
+      }
+      this.sfx(line);
+    }
+  }
 
   renderScore() {
     context.save();
@@ -298,59 +354,103 @@ class Tetris {
   }
 }
 
+const target = document.body;
 const game = new Tetris();
 
-context.fillStyle = "#038607";
-context.fillRect(0, 0, canvas.width, canvas.height);
-context.fillStyle = "#55FE55";
-context.font = `bolder ${2.25 * px}px ${font}`;
-context.textBaseline = "middle";
-context.textAlign = "center";
-context.fillText(
-  `tetris`,
-  BoardConstant.CENTER_X * px,
-  BoardConstant.CENTER_Y * px
-);
-context.font = `${px / 2}px ${font}`;
-context.fillText(
-  "click to start",
-  BoardConstant.CENTER_X * px,
-  (BoardConstant.HEIGHT - 3) * px
-);
+const button = document.querySelector("button")!;
 
-canvas.onclick = () => {
-  canvas.requestFullscreen();
-  canvas.onclick = null;
-  {
-    let then = performance.now();
+button.classList.toggle("active", !game.muted);
 
-    const UPS = 3 / 2;
+button.onclick = e => {
+  const muted = game.toggleSound();
+  button.classList.toggle("active", !muted);
+  e.stopPropagation();
+  e.preventDefault();
+};
 
-    const step = 1000 / UPS;
+if (!mobile) {
+  mute();
+  game.unmuteIfEnabled();
+}
 
-    let accumulator = 0;
-
-    (function frame(now) {
-      const dt = now - then;
-
-      accumulator += dt;
-
-      while (accumulator >= step) {
-        accumulator -= step;
-        game.update();
-      }
-
-      game.render();
-
-      then = now;
-
-      requestAnimationFrame(frame);
-    })(then);
-
-    beat.currentTime = 0;
-    beat_fast.currentTime = 0;
-    tetris_slow.currentTime = 0;
-
-    game.transitionToSlowerSound();
+target.onclick = () => {
+  if (mobile && !(target === document.fullscreenElement)) {
+    game.unmuteIfEnabled();
+    tetris_lofi.play();
+    tetris_lofi.currentTime = 0;
+    target.requestFullscreen();
+  } else {
+    target.onclick = null;
+    then = performance.now();
   }
 };
+
+(function home() {
+  context.fillStyle = "#038607";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "#55FE55";
+  context.font = `bolder ${2.15 * px}px ${font}`;
+  context.textBaseline = "middle";
+  context.textAlign = "center";
+  context.fillText(
+    `tetris`,
+    BoardConstant.CENTER_X * px,
+    BoardConstant.CENTER_Y * px
+  );
+  context.font = `${px / 2}px ${font}`;
+  context.fillText(
+    `${mobile ? "tap" : "click"} to start`,
+    BoardConstant.CENTER_X * px,
+    (BoardConstant.HEIGHT - 3) * px
+  );
+  // @ts-ignore
+  requestAnimationFrame(target.onclick ? home : run);
+})();
+
+function unmute() {
+  beat.volume = beat_fast.volume = 0.5;
+  tetris.volume = tetris_slow.volume = 0.4;
+  tetris_lofi.volume = 0.6;
+}
+
+function mute() {
+  for (const audio of audios) audio.volume = 0;
+}
+
+let then = performance.now();
+
+document.onvisibilitychange = () => {
+  if (document.visibilityState === "visible") {
+    game.unmuteIfEnabled();
+    then = performance.now();
+  } else {
+    mute();
+  }
+};
+
+function run() {
+  game.transitionToGameSound();
+
+  const UPS = 3 / 2;
+
+  const step = 1000 / UPS;
+
+  let accumulator = 0;
+
+  (function frame(now) {
+    const dt = now - then;
+
+    accumulator += dt;
+
+    while (accumulator >= step) {
+      accumulator -= step;
+      game.update();
+    }
+
+    game.render();
+
+    then = now;
+
+    requestAnimationFrame(frame);
+  })(then);
+}

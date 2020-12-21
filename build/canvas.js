@@ -3,16 +3,17 @@ export const context = canvas.getContext("2d");
 let height = 0;
 let width = 0;
 export let px = 0;
+const offset = 100 * window.devicePixelRatio;
 function fill(mode) {
     const ratio = innerWidth / innerHeight;
     if (mode === 1 /* CONTAIN */
         ? ratio < 0.5 /* WIDTH_RATIO */
         : ratio > 0.5 /* WIDTH_RATIO */) {
-        width = innerWidth;
+        width = innerWidth - offset;
         height = width * 2 /* HEIGHT_RATIO */;
     }
     else {
-        height = innerHeight;
+        height = innerHeight - offset;
         width = height * 0.5 /* WIDTH_RATIO */;
     }
 }

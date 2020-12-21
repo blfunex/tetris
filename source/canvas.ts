@@ -1,4 +1,3 @@
-import Board from "./Board";
 import { BoardConstant } from "./BoardConstant";
 
 export const canvas = document.createElement("canvas");
@@ -14,6 +13,8 @@ const enum FillMode {
   CONTAIN,
 }
 
+const offset = 100 * window.devicePixelRatio;
+
 function fill(mode: FillMode) {
   const ratio = innerWidth / innerHeight;
   if (
@@ -21,10 +22,10 @@ function fill(mode: FillMode) {
       ? ratio < BoardConstant.WIDTH_RATIO
       : ratio > BoardConstant.WIDTH_RATIO
   ) {
-    width = innerWidth;
+    width = innerWidth - offset;
     height = width * BoardConstant.HEIGHT_RATIO;
   } else {
-    height = innerHeight;
+    height = innerHeight - offset;
     width = height * BoardConstant.WIDTH_RATIO;
   }
 }
