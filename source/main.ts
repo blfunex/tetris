@@ -19,8 +19,8 @@ const [
   no_line,
 ] = document.querySelectorAll("audio");
 
-beat.volume = beat_fast.volume = 0.1;
-tetris.volume = tetris_slow.volume = 0.2;
+beat.volume = beat_fast.volume = 0.5;
+tetris.volume = tetris_slow.volume = 0.4;
 
 const mobile = window.ontouchstart === null;
 
@@ -279,19 +279,19 @@ class Tetris {
     context.textBaseline = "middle";
     context.textAlign = "center";
     context.fillText(
-      `SCORE: ${score}`,
+      `score: ${score}`,
       BoardConstant.CENTER_X * px,
       BoardConstant.CENTER_Y * px
     );
     context.font = `${px / 2}px ${font}`;
     context.fillText(
-      `HIGHSCORE: ${highscore}`,
+      `highscore: ${highscore}`,
       BoardConstant.CENTER_X * px,
       (BoardConstant.CENTER_Y + 1) * px
     );
     context.font = `${px / 2}px ${font}`;
     context.fillText(
-      `${mobile ? "Touch" : "Press SPACE"} to RESTART`,
+      `${mobile ? "touch" : "press space"} to restart`,
       BoardConstant.CENTER_X * px,
       (BoardConstant.HEIGHT - 3) * px
     );
@@ -307,13 +307,13 @@ context.font = `bolder ${2.25 * px}px ${font}`;
 context.textBaseline = "middle";
 context.textAlign = "center";
 context.fillText(
-  `TETRIS`,
+  `tetris`,
   BoardConstant.CENTER_X * px,
   BoardConstant.CENTER_Y * px
 );
 context.font = `${px / 2}px ${font}`;
 context.fillText(
-  "CLICK TO START",
+  "click to start",
   BoardConstant.CENTER_X * px,
   (BoardConstant.HEIGHT - 3) * px
 );

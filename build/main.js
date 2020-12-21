@@ -6,8 +6,8 @@ const LEFT = Point(-1, 0);
 const RIGHT = Point(+1, 0);
 const font = "'Major Mono Display', 'Courier New', Courier, monospace";
 const [beat, beat_fast, tetris_slow, tetris, line, no_line,] = document.querySelectorAll("audio");
-beat.volume = beat_fast.volume = 0.1;
-tetris.volume = tetris_slow.volume = 0.2;
+beat.volume = beat_fast.volume = 0.5;
+tetris.volume = tetris_slow.volume = 0.4;
 const mobile = window.ontouchstart === null;
 let touch_paused = 0;
 class Tetris {
@@ -233,11 +233,11 @@ class Tetris {
         context.font = `bolder ${px}px ${font}`;
         context.textBaseline = "middle";
         context.textAlign = "center";
-        context.fillText(`SCORE: ${score}`, 5 /* CENTER_X */ * px, 10 /* CENTER_Y */ * px);
+        context.fillText(`score: ${score}`, 5 /* CENTER_X */ * px, 10 /* CENTER_Y */ * px);
         context.font = `${px / 2}px ${font}`;
-        context.fillText(`HIGHSCORE: ${highscore}`, 5 /* CENTER_X */ * px, (10 /* CENTER_Y */ + 1) * px);
+        context.fillText(`highscore: ${highscore}`, 5 /* CENTER_X */ * px, (10 /* CENTER_Y */ + 1) * px);
         context.font = `${px / 2}px ${font}`;
-        context.fillText(`${mobile ? "Touch" : "Press SPACE"} to RESTART`, 5 /* CENTER_X */ * px, (20 /* HEIGHT */ - 3) * px);
+        context.fillText(`${mobile ? "touch" : "press space"} to restart`, 5 /* CENTER_X */ * px, (20 /* HEIGHT */ - 3) * px);
     }
 }
 const game = new Tetris();
@@ -247,9 +247,9 @@ context.fillStyle = "#55FE55";
 context.font = `bolder ${2.25 * px}px ${font}`;
 context.textBaseline = "middle";
 context.textAlign = "center";
-context.fillText(`TETRIS`, 5 /* CENTER_X */ * px, 10 /* CENTER_Y */ * px);
+context.fillText(`tetris`, 5 /* CENTER_X */ * px, 10 /* CENTER_Y */ * px);
 context.font = `${px / 2}px ${font}`;
-context.fillText("CLICK TO START", 5 /* CENTER_X */ * px, (20 /* HEIGHT */ - 3) * px);
+context.fillText("click to start", 5 /* CENTER_X */ * px, (20 /* HEIGHT */ - 3) * px);
 canvas.onclick = () => {
     canvas.requestFullscreen();
     canvas.onclick = null;
