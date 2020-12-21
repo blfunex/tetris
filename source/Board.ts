@@ -1,9 +1,11 @@
 import { BoardConstant } from "./BoardConstant.js";
-import { clear, pixel } from "./canvas.js";
+import { clear, context, pixel } from "./canvas.js";
 import Piece from "./Piece.js";
 import Tetromino from "./Tetromino.js";
 
 export default class Board {
+  public pixel = false;
+
   clear() {
     this.board.fill(0);
   }
@@ -20,8 +22,7 @@ export default class Board {
 
   choose() {
     const bag = Board.tetrominos;
-    // const prototype = bag[(Math.random() * bag.length) | 0];
-    const prototype = Tetromino.I;
+    const prototype = bag[(Math.random() * bag.length) | 0];
     const tetromino = new Tetromino(prototype.shapes, prototype.center);
     return new Piece(this, tetromino);
   }
@@ -43,6 +44,7 @@ export default class Board {
 
   render() {
     clear();
+    context.fillStyle = "#038607";
     for (let r = 0; r < BoardConstant.HEIGHT; r++) {
       for (let c = 0; c < BoardConstant.WIDTH; c++) {
         if (this.get(c, r)) {

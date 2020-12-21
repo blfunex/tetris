@@ -1,18 +1,17 @@
 import { context, pixel, px } from "./canvas.js";
 import { TetrominoShape } from "./shapes.js";
-import { lerp_angle } from "./utils.js";
 export default class Tetromino {
     constructor(shapes, center) {
         this.shapes = shapes;
         this.center = center;
     }
-    draw(x, y, rotation) {
+    render(x, y, id) {
         const shapes = this.shapes;
-        rotation = rotation % shapes.length;
-        drawTetrominoShape(x, y, shapes[rotation]);
+        id = id % shapes.length;
+        drawTetrominoShape(x, y, shapes[id]);
     }
-    render(x, y, rotation, previous, blending) {
-        drawTetromino(x, y, this.shapes[0], ...this.center, rotation, previous, blending);
+    renderRotated(x, y, rotation) {
+        drawTetromino(x, y, this.shapes[0], ...this.center, rotation);
     }
 }
 Tetromino.Z = new Tetromino(TetrominoShape.Z, [1.5, 1.5]);
@@ -32,11 +31,7 @@ function drawTetrominoShape(x, y, tetromino) {
         }
     }
 }
-const PIo2 = Math.PI / 2;
-function drawTetromino(x, y, tetromino, cx, cy, current_rotation, previous_rotation, t) {
-    current_rotation *= PIo2;
-    previous_rotation *= PIo2;
-    const rotation = lerp_angle(previous_rotation, current_rotation, t);
+function drawTetromino(x, y, tetromino, cx, cy, rotation) {
     context.save();
     x += cx;
     y += cy;

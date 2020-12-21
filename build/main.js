@@ -1,9 +1,10 @@
-import { context, gameover } from "./canvas.js";
+import { canvas, context, px } from "./canvas.js";
 import Board from "./Board.js";
 import { Point } from "./Point.js";
 const DOWN = Point(0, 1);
 const LEFT = Point(-1, 0);
 const RIGHT = Point(+1, 0);
+const font = "'Courier New', Courier, monospace";
 class Tetris {
     constructor() {
         this.board = new Board();
@@ -11,11 +12,15 @@ class Tetris {
         this.score = 0;
         this.highscore = parseInt(localStorage.getItem("highscore") ?? "0", 10);
         this.ended = false;
-        this.renderedScore = 0;
+        this.rendered_score = 0;
         document.onkeydown = this.control.bind(this);
     }
     control(e) {
+        e.preventDefault();
         switch (e.key) {
+            case "F1":
+                this.board.pixel = !this.board.pixel;
+                break;
             case " ":
                 if (this.ended) {
                     this.board.clear();
@@ -65,26 +70,46 @@ class Tetris {
     update() {
         if (this.ended)
             return;
-        this.piece.update();
         this.lock(this.piece.move(DOWN));
     }
     render() {
         if (this.ended) {
-            gameover(this.score, this.highscore);
+            this.renderGameOver(this.score, this.highscore);
         }
         else {
             this.board.render();
-            this.piece.render(blending);
+            this.piece.render();
             this.renderScore();
         }
     }
     renderScore() {
         context.save();
-        context.fillStyle = "red";
-        this.renderedScore += Math.sign(this.score - this.renderedScore);
+        context.font = `900 ${px}px ${font}`;
+        context.textBaseline = "top";
+        context.textAlign = "left";
+        context.fillStyle = "#04D20A";
+        this.rendered_score +=
+            Math.sign(this.score - this.rendered_score) * 0.5;
         // @ts-ignore
-        context.fillText(this.renderedScore, 100, 100);
+        context.fillText(Math.round(this.rendered_score), px * 0.5, px * 0.5);
         context.restore();
+    }
+    renderGameOver(score, highscore) {
+        const width = canvas.width;
+        const height = canvas.height;
+        context.fillStyle = "#038607";
+        context.fillRect(0, 0, width, height);
+        context.fillStyle = "#55FE55";
+        context.font = `bolder ${px}px ${font}`;
+        context.textBaseline = "middle";
+        context.textAlign = "center";
+        context.fillText(`SCORE: ${score}`, 5 /* CENTER_X */ * px, 10 /* CENTER_Y */ * px);
+        context.font = `${px / 2}px ${font}`;
+        context.fillText(`HIGHSCORE: ${highscore}`, 5 /* CENTER_X */ * px, (10 /* CENTER_Y */ + 1) * px);
+        context.font = `${px / 4}px ${font}`;
+        context.fillText("Use F1 to toggle non-animated Tetrominos.", 5 /* CENTER_X */ * px, (20 /* HEIGHT */ - 1.4) * px);
+        context.font = `${px / 2}px ${font}`;
+        context.fillText("Press SPACE BAR to RETRY", 5 /* CENTER_X */ * px, (20 /* HEIGHT */ - 1) * px);
     }
 }
 const tetris = new Tetris();
@@ -94,10 +119,9 @@ function update() {
 function render() {
     tetris.render();
 }
-export let blending = 0;
 {
     let then = performance.now();
-    const UPS = 1.75;
+    const UPS = 3 / 2;
     const step = 1000 / UPS;
     let accumulator = 0;
     (function frame(now) {
@@ -107,9 +131,6 @@ export let blending = 0;
             accumulator -= step;
             update();
         }
-        blending = accumulator / step;
-        // blending = clamp(blending * 1.1, 0, 1);
-        // blending = ease(blending * blending);
         render();
         then = now;
         requestAnimationFrame(frame);

@@ -1,8 +1,9 @@
-import { clear, pixel } from "./canvas.js";
+import { clear, context, pixel } from "./canvas.js";
 import Piece from "./Piece.js";
 import Tetromino from "./Tetromino.js";
 export default class Board {
     constructor() {
+        this.pixel = false;
         this.board = Array.from({
             length: 200 /* BOARD_ARRAY_LENGTH */,
         }, () => 0);
@@ -12,8 +13,7 @@ export default class Board {
     }
     choose() {
         const bag = Board.tetrominos;
-        // const prototype = bag[(Math.random() * bag.length) | 0];
-        const prototype = Tetromino.I;
+        const prototype = bag[(Math.random() * bag.length) | 0];
         const tetromino = new Tetromino(prototype.shapes, prototype.center);
         return new Piece(this, tetromino);
     }
@@ -25,6 +25,7 @@ export default class Board {
     }
     render() {
         clear();
+        context.fillStyle = "#038607";
         for (let r = 0; r < 20 /* HEIGHT */; r++) {
             for (let c = 0; c < 10 /* WIDTH */; c++) {
                 if (this.get(c, r)) {

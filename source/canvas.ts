@@ -44,7 +44,6 @@ const enum _ {
 }
 
 export function pixel(x: number, y: number) {
-  context.fillStyle = "#038607";
   context.fillRect(
     x * px - _.EPSILON,
     y * px - _.EPSILON,
@@ -56,33 +55,6 @@ export function pixel(x: number, y: number) {
 export function clear() {
   context.fillStyle = "#55FE55";
   context.fillRect(0, 0, width, height);
-}
-
-const font = "'Courier New', Courier, monospace";
-
-export function gameover(score: number, highscore: number) {
-  context.fillStyle = "#038607";
-  context.fillRect(0, 0, width, height);
-  context.fillStyle = "#55FE55";
-  context.font = `${px}px ${font}`;
-  context.textBaseline = "middle";
-  context.textAlign = "center";
-  context.fillText(
-    `SCORE: ${score}`,
-    BoardConstant.CENTER_X * px,
-    BoardConstant.CENTER_Y * px
-  );
-  context.font = `${px / 2}px ${font}`;
-  context.fillText(
-    `HIGHSCORE: ${highscore}`,
-    BoardConstant.CENTER_X * px,
-    (BoardConstant.CENTER_Y + 1) * px
-  );
-  context.fillText(
-    "Press SPACE BAR to RETRY",
-    BoardConstant.CENTER_X * px,
-    (BoardConstant.HEIGHT - 1) * px
-  );
 }
 
 document.body.append(canvas);

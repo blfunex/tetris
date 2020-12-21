@@ -232,8 +232,8 @@
         "affectsGlobalScope": false
       },
       "../source/canvas.ts": {
-        "version": "7ebfcda99e6343690bb138b94a7c257655581edcdf141af4a9e0e8f3d6e7d7aa",
-        "signature": "3bb625e6d1371bb40b8db4f2ef6e1f77c4908da5a3868282532448e282133b5b",
+        "version": "5ede8fe503850673d8afbc7a61699af443f3a1cc84d1015171497f3e09ed469e",
+        "signature": "6476e9b1d5e68a106c98fe0eea288f35d411f5c27c8b9e26f957b64baadbded8",
         "affectsGlobalScope": false
       },
       "../source/shapes.ts": {
@@ -241,14 +241,14 @@
         "signature": "f1abe110f968c20f3ae00853b1b40fbd5f5abdcaa915d32507de6a24e41bfb5a",
         "affectsGlobalScope": false
       },
+      "../source/tetromino.ts": {
+        "version": "08c82d0bfd617745ac1be55e750c2a7dd2e46143498af86616b2ff499c7b70c7",
+        "signature": "a6662e3e6082d80629e7b2f368babeb22aac5b9a8ecbd4e18fe8a2b95e45d092",
+        "affectsGlobalScope": false
+      },
       "../source/utils.ts": {
         "version": "3908b2609467a405c2acba21d88283a62dcabd621005cc003e43aa951778b834",
         "signature": "26e0b58504279abef70efbdb0f4b4f86ef8291d3d222a4865c586549d80296c6",
-        "affectsGlobalScope": false
-      },
-      "../source/tetromino.ts": {
-        "version": "34d207d69cebea39cc5c64d142d94371bdfe595230228f72282bdb0f5f23f9ba",
-        "signature": "919b85bd0280fd0d2c01f6bc72aaf39a37e5e1c8037c1138d850b53f26b7717e",
         "affectsGlobalScope": false
       },
       "../source/point.ts": {
@@ -256,19 +256,19 @@
         "signature": "1ae26f8394105b6551f35513b05fe5865bed469ddb23a2f73116db24c19d6b78",
         "affectsGlobalScope": false
       },
-      "../source/main.ts": {
-        "version": "0e64dc6ca562b359109789681e5487cd264202b711ca4bd302551ab0d781adf9",
-        "signature": "5fe9a78211353ae8de181afa39575e96f277a464888f3b6e06fbeee2b13b80e3",
-        "affectsGlobalScope": false
-      },
       "../source/piece.ts": {
-        "version": "7412d0b6f7a6591207611488e2bcaff8ea38d2a75184839faec093a984060c24",
-        "signature": "b5e42c1a3290450d63cbb1b606acb37c9f26c9fc7705e1807f3c76f5a454b337",
+        "version": "d3d203ce820080c0090a8f507ac1fb954747a93a52d57f4237c9549d807844e0",
+        "signature": "cf94e7a45b7ed7fd22f286992331368f695eb5d97a0eaec5ec893bbae46cd84d",
         "affectsGlobalScope": false
       },
       "../source/board.ts": {
-        "version": "bcb6fc7cedfca8c7c383acfc19e5e82ccae50a7a95600e19570b8021501127b6",
-        "signature": "13ec8dd18184e2a2e47512ec11aff6bbc35d266028fc6d2aa50e94f6d36901b6",
+        "version": "b08f53b69913c4e9342622be8d35ea9d24cfa229d9b3be99d1d9e4585beb1c67",
+        "signature": "b41303996f2e9fa3d66bf70ebcd830fb780ef147ef50deb5597072c5e6d38a06",
+        "affectsGlobalScope": false
+      },
+      "../source/main.ts": {
+        "version": "2d59c1690b58027c4e812b084c79b6763d72c7c24cde4e53773b926cb771cec5",
+        "signature": "f761c91419d0a89422a0004ef1a92929dd4d2d5e5c16758654d8b0467d1998c6",
         "affectsGlobalScope": false
       }
     },
@@ -295,6 +295,7 @@
       ],
       "../source/main.ts": [
         "../source/board.ts",
+        "../source/boardconstant.ts",
         "../source/canvas.ts",
         "../source/point.ts",
         "../source/utils.ts"
@@ -303,7 +304,6 @@
         "../source/board.ts",
         "../source/boardconstant.ts",
         "../source/canvas.ts",
-        "../source/main.ts",
         "../source/point.ts",
         "../source/shapes.ts",
         "../source/tetromino.ts",
@@ -314,8 +314,7 @@
       ],
       "../source/tetromino.ts": [
         "../source/canvas.ts",
-        "../source/shapes.ts",
-        "../source/utils.ts"
+        "../source/shapes.ts"
       ]
     },
     "exportedModulesMap": {
