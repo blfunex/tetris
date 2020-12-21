@@ -94,7 +94,7 @@ export default class Piece {
   }
 
   private render_angle = 0;
-  private render_position = Point(3, -1);
+  private render_position = Point(3, -2);
 
   render() {
     const index = this.index;

@@ -5,9 +5,11 @@ import Tetromino from "./Tetromino.js";
 
 export default class Board {
   public pixel = false;
+  public height = 0;
 
   clear() {
     this.board.fill(0);
+    this.height = 0;
   }
 
   private static readonly tetrominos = [
@@ -79,6 +81,8 @@ export default class Board {
 
         // we lock the piece
         this.set(x + c, y + r, true);
+
+        this.height = Math.max(20 - (y + r), this.height);
       }
     }
 

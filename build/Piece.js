@@ -8,7 +8,7 @@ export default class Piece {
         this.position = Point(3, -2);
         this.index = 0;
         this.render_angle = 0;
-        this.render_position = Point(3, -1);
+        this.render_position = Point(3, -2);
     }
     get shapes() {
         return this.tetromino.shapes;

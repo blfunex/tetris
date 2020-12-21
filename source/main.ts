@@ -1,7 +1,5 @@
 import { canvas, context, px } from "./canvas.js";
 
-import { clamp, easeOutBack as ease, lerp } from "./utils.js";
-
 import Board, { LockResult } from "./Board.js";
 import { Point } from "./Point.js";
 import { BoardConstant } from "./BoardConstant.js";
@@ -11,6 +9,10 @@ const LEFT = Point(-1, 0);
 const RIGHT = Point(+1, 0);
 
 const font = "'Courier New', Courier, monospace";
+
+const [beat, beat_fast, tetris_slow, tetris] = document.querySelectorAll(
+  "audio"
+);
 
 class Tetris {
   private readonly board = new Board();
@@ -31,6 +33,7 @@ class Tetris {
         break;
       case " ":
         if (this.ended) {
+          this.startSound();
           this.board.clear();
           this.piece = this.board.choose();
           this.score = 0;
@@ -58,6 +61,14 @@ class Tetris {
 
   private ended = false;
 
+  private startSound() {
+    beat.currentTime = 0;
+    beat_fast.currentTime = 0;
+    tetris_slow.currentTime = 0;
+    tetris.muted = beat_fast.muted = true;
+    beat.muted = tetris_slow.muted = false;
+  }
+
   private end() {
     const score = this.score;
     if (score > this.highscore) {
@@ -71,11 +82,25 @@ class Tetris {
     if (moved) return;
     const board = this.board;
     const result = board.lock(this.piece);
-    if (result === LockResult.GAME_OVER) return this.end();
-    else {
+    if (result === LockResult.GAME_OVER) {
+      beat.muted = beat_fast.muted = true;
+      return this.end();
+    } else {
+      if (this.board.height >= 10) {
+        this.transitionToFasterSound();
+      }
       this.score += result === LockResult.NOTHING ? 5 : result * 20;
       this.piece = board.choose();
     }
+  }
+
+  private transitionToFasterSound() {
+    if (!tetris.muted) return;
+    tetris.currentTime =
+      tetris.duration *
+      (tetris_slow.currentTime / tetris_slow.currentTime);
+    tetris.muted = beat_fast.muted = false;
+    tetris_slow.muted = beat.muted = true;
   }
 
   update() {
@@ -103,8 +128,11 @@ class Tetris {
     context.fillStyle = "#04D20A";
     this.rendered_score +=
       Math.sign(this.score - this.rendered_score) * 0.5;
-    // @ts-ignore
-    context.fillText(Math.round(this.rendered_score), px * 0.5, px * 0.5);
+    context.fillText(
+      `${Math.round(this.rendered_score)} ${this.board.height}`,
+      px * 0.5,
+      px * 0.5
+    );
     context.restore();
   }
 
@@ -144,15 +172,7 @@ class Tetris {
   }
 }
 
-const tetris = new Tetris();
-
-function update() {
-  tetris.update();
-}
-
-function render() {
-  tetris.render();
-}
+const game = new Tetris();
 
 {
   let then = performance.now();
@@ -170,13 +190,17 @@ function render() {
 
     while (accumulator >= step) {
       accumulator -= step;
-      update();
+      game.update();
     }
 
-    render();
+    game.render();
 
     then = now;
 
     requestAnimationFrame(frame);
   })(then);
+
+  beat.currentTime = 0;
+  beat_fast.currentTime = 0;
+  tetris_slow.currentTime = 0;
 }

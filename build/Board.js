@@ -4,12 +4,14 @@ import Tetromino from "./Tetromino.js";
 export default class Board {
     constructor() {
         this.pixel = false;
+        this.height = 0;
         this.board = Array.from({
             length: 200 /* BOARD_ARRAY_LENGTH */,
         }, () => 0);
     }
     clear() {
         this.board.fill(0);
+        this.height = 0;
     }
     choose() {
         const bag = Board.tetrominos;
@@ -53,6 +55,7 @@ export default class Board {
                 }
                 // we lock the piece
                 this.set(x + c, y + r, true);
+                this.height = Math.max(20 - (y + r), this.height);
             }
         }
         for (let r = 0; r < 20 /* HEIGHT */; r++) {
