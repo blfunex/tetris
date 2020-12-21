@@ -1,0 +1,91 @@
+
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        min-height: 100vh;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #706e70;
+        box-shadow: 0 0 0 20px inset #fec401, 0 0 0 23px inset #5a4d2f;
+        overflow: hidden;
+      }
+
+      .gg-music-note,
+      body::before,
+      button::before {
+        position: fixed !important;
+        display: block;
+        content: "";
+      }
+
+      body::before {
+        transform: translate(-50%, -50%);
+        background-color: #725e2a;
+        border-radius: 5px;
+        width: 20vmin;
+        height: 5px;
+        left: 50%;
+        top: 10px;
+      }
+
+      button::before {
+        transform: translate(0, -50%);
+        background-color: #fd8146;
+        box-shadow: 0 0 0 3px  #4d3934;
+        border-radius: 50%;
+        top: 50%;
+        left: 30px;
+        width: 10px;
+        height: 10px;
+      }
+
+      button {
+        border: none;
+        background: none;
+        touch-action: none;
+        cursor: pointer;
+      }
+
+      button.active::before {
+        background-color: #FF9A46;
+        box-shadow: 0 0 0 3px  #4d393488, 0 0 3px 5px #FF9A4666;
+      }
+
+      .gg-music-note {
+        margin-top: 20px;
+        top: 50%;
+        left: 33px;
+        opacity: 0.5;
+        color:#201E1C;
+      }
+
+      :root {
+        background-color: #fec401;
+      }
+
+      ::backdrop {
+        background-color: #fec401;
+      }
+
+      canvas {
+        display: block;
+        font-family: "Courier New", Courier, monospace;
+        border: 3px solid #2c4a23;
+        border-radius: 5px;
+      }
+
+      canvas,
+      body {
+        touch-action: none;
+      }
+
+      canvas {
+        pointer-events: none;
+      }
