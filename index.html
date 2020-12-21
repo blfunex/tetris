@@ -55,10 +55,10 @@
       button::before {
         transform: translate(0, -50%);
         background-color: #fd8146;
-        border: 3px solid #4d3934;
+        box-shadow: 0 0 0 3px  #4d3934;
         border-radius: 50%;
         top: 50%;
-        left: 28px;
+        left: 30px;
         width: 10px;
         height: 10px;
       }
@@ -72,6 +72,7 @@
 
       button.active::before {
         background-color: #FF9A46;
+        box-shadow: 0 0 0 3px  #4d393488, 0 0 3px 5px #FF9A4666;
       }
 
       .gg-music-note {
