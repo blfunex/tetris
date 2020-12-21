@@ -1,112 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
+
     <link rel="preconnect" href="https://fonts.gstatic.com" />
+
+    <title>HD Tetris | The classic game reimagined.</title>
+    <meta name="title" content="HD Tetris | The classic game reimagined." />
+
+    <meta name="description" content="An open source implementation of Tetris but it has inbetweening and higher resolution, making it feel modern while looking like it would of back in nineteens" />
+
+    <meta name="author" content="Youness B. (www.github.com/blfunex)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="renderer" content="webkit" />
+
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://blfunex.github.com/tetris/"/>
+    <meta property="og:title" content="HD Tetris | The classic game reimagined."/>
+    <meta property="og:description" content="An open source implementation of Tetris but it has inbetweening and higher resolution, making it feel modern while looking like it would of back in nineteens"/>
+    <meta property="og:image" content="https://blfunex.github.com/tetris/cover.png"/>
+
+    <meta property="twitter:card" content="summary_large_image"/>
+    <meta property="twitter:url" content="https://blfunex.github.com/tetris/"/>
+    <meta property="twitter:title" content="HD Tetris | The classic game reimagined."/>
+    <meta property="twitter:description" content="An open source implementation of Tetris but it has inbetweening and higher resolution, making it feel modern while looking like it would of back in nineteens"/>
+    <meta property="twitter:image" content="https://blfunex.github.com/tetris/cover.png"/>
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    
     <link href="https://css.gg/css?=|music-note" rel="stylesheet" />
     <link
       href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap"
       rel="stylesheet"
     />
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <title>HD Tetris</title>
-    <style>
-      * {
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        min-height: 100vh;
-      }
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #706e70;
-        box-shadow: 0 0 0 20px inset #fec401, 0 0 0 23px inset #5a4d2f;
-        border-radius: 5px;
-        overflow: hidden;
-      }
-
-      .gg-music-note,
-      body::before,
-      button::before {
-        position: fixed;
-        display: block;
-        content: "";
-      }
-
-      body::before {
-        transform: translate(-50%, -50%);
-        background-color: #725e2a;
-        border-radius: 5px;
-        width: 20vmin;
-        height: 5px;
-        left: 50%;
-        top: 10px;
-      }
-
-      button::before {
-        transform: translate(0, -50%);
-        background-color: #fd8146;
-        box-shadow: 0 0 0 3px  #4d3934;
-        border-radius: 50%;
-        top: 50%;
-        left: 30px;
-        width: 10px;
-        height: 10px;
-      }
-
-      button {
-        border: none;
-        background: none;
-        touch-action: none;
-        cursor: pointer;
-      }
-
-      button.active::before {
-        background-color: #FF9A46;
-        box-shadow: 0 0 0 3px  #4d393488, 0 0 3px 5px #FF9A4666;
-      }
-
-      .gg-music-note {
-        margin-top: 20px;
-        top: 50%;
-        left: 33px;
-        opacity: 0.5;
-        color:#201E1C;
-      }
-
-      :root {
-        background-color: #fec401;
-      }
-
-      ::backdrop {
-        background-color: #fec401;
-      }
-
-      canvas {
-        display: block;
-        font-family: "Courier New", Courier, monospace;
-        border: 3px solid #2c4a23;
-        border-radius: 5px;
-      }
-
-      canvas,
-      body {
-        touch-action: none;
-      }
-
-      canvas {
-        pointer-events: none;
-      }
-    </style>
   </head>
   <body>
     <button><i class="gg-music-note"></i></button>

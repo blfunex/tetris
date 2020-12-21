@@ -304,8 +304,8 @@ if (!mobile) {
 target.onclick = () => {
     if (mobile && !(target === document.fullscreenElement)) {
         target.requestFullscreen();
-        tetris_lofi.currentTime = 0;
         tetris_lofi.play();
+        tetris_lofi.muted = false;
         game.unmuteIfEnabled();
     }
     else {
